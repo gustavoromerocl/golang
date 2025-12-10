@@ -1,0 +1,27 @@
+package main
+
+import "net/http"
+
+func (s *api) getUsersHandler(w http.ResponseWriter, r *http.Request) {
+	w.Write([]byte("users page"))
+}
+
+func (s *api) createUserHandler(w http.ResponseWriter, r *http.Request) {
+	w.Write([]byte("create user"))
+}
+
+func init() { //main
+	api := &api{addr: ":8080"}
+
+	mux := http.NewServeMux()
+
+	srv := &http.Server{
+		Addr:    api.addr,
+		Handler: mux,
+	}
+
+	mux.HandleFunc("GET /users", api.getUsersHandler)
+	mux.HandleFunc("POST /users", api.createUserHandler)
+
+	srv.ListenAndServe()
+}
