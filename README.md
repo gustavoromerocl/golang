@@ -17,3 +17,18 @@ air init
 air
 ```
 
+## DATABASE
+```
+# postgres driver install
+
+go get github.com/lib/pq
+```
+
+
+
+migrations cli: https://github.com/golang-migrate/migrate
+
+bash
+```
+migrate create -seq -ext sql -dir ./cmd/migrate/migrations create_users
+```
