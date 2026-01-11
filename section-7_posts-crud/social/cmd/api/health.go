@@ -7,7 +7,7 @@ func (app *application) healthCheckHandler(w http.ResponseWriter, r *http.Reques
 		"status":  "ok",
 		"env":     app.config.env,
 		"version": version}); err != nil {
-		writeJSONError(w, http.StatusInternalServerError, "err.Error()")
+		app.internalServerError(w, r, err)
 		return
 	}
 }
