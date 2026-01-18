@@ -29,6 +29,10 @@ func (s *PostStore) Create(ctx context.Context, post *Post) error {
 	// Implementation for creating a post in the database
 	query := `INSERT INTO posts (content, title, user_id, tags)
 			  VALUES ($1, $2, $3, $4) RETURNING id, created_at, updated_at`
+
+	ctx, cancel := context.WithTimeout(ctx, QueryContextTimeout)
+	defer cancel()
+
 	err := s.db.QueryRowContext(
 		ctx,
 		query,
@@ -53,6 +57,9 @@ func (s *PostStore) GetByID(ctx context.Context, id int64) (*Post, error) {
 		FROM posts 
 		WHERE id = $1
 	`
+
+	ctx, cancel := context.WithTimeout(ctx, QueryContextTimeout)
+	defer cancel()
 
 	post := &Post{}
 	err := s.db.QueryRowContext(ctx, query, id).Scan(
@@ -85,6 +92,10 @@ func (s *PostStore) Update(ctx context.Context, post *Post) error {
 		WHERE id = $4 AND version $5
 		RETURNING version`
 	_, err := s.db.ExecContext(ctx, query, post.Title, post.Content, pq.Array(post.Tags), post.ID, post.Version)
+
+	_, cancel := context.WithTimeout(ctx, QueryContextTimeout)
+	defer cancel()
+
 	if err != nil {
 		return err
 	}
@@ -93,6 +104,9 @@ func (s *PostStore) Update(ctx context.Context, post *Post) error {
 
 func (s *PostStore) Delete(ctx context.Context, id int64) error {
 	query := `DELETE FROM posts WHERE id = $1`
+
+	ctx, cancel := context.WithTimeout(ctx, QueryContextTimeout)
+	defer cancel()
 
 	result, err := s.db.ExecContext(ctx, query, id)
 	if err != nil {
