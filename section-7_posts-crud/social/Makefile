@@ -1,4 +1,4 @@
-include .envrc
+SHELL := /bin/bash
 MIGRATIONS_PATH = ./cmd/migrate/migrations
 
 .PHONY: migrate-create
@@ -7,8 +7,12 @@ migration:
 
 .PHONY: migrate-up
 migrate-up:
-	@migrate -path=$(MIGRATIONS_PATH) -database=$(DB_ADDR) up
+	@source .envrc && migrate -path=$(MIGRATIONS_PATH) -database=$(DB_ADDR) up
 
 .PHONY: migrate-down
 migrate-down:
-	@migrate -path=$(MIGRATIONS_PATH) -database=$(DB_ADDR) down $(filter-out $@,$(MAKECMDGOALS))
+	@source .envrc && migrate -path=$(MIGRATIONS_PATH) -database=$(DB_ADDR) down $(filter-out $@,$(MAKECMDGOALS))
+
+.PHONY: seed
+seed:
+	@source .envrc && go run ./cmd/migrate/seed/main.go
